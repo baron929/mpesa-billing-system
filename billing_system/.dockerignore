@@ -1,0 +1,139 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Version Control
+.github
+.gitlab-ci.yml
+.circleci
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+*.tmp
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+*.iml
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+*.log
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Node.js dependencies (if applicable)
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-store
+pnpm-lock.yaml
+package-lock.json
+
+# Build output
+.next
+out
+dist
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
+
+# Docker
+Dockerfile*
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+
+# Documentation
+README.md
+QUICKSTART.md
+DEPLOYMENT.md
+TESTING.md
+INSTALLATION_CHECKLIST.md
+DOCKER_DEPLOY.md
+DOCKER_CHECKLIST.md
+PROJECT_SUMMARY.md
+*.md
+
+# Testing
+tests/
+test_*.py
+*_test.py
+pytest.ini
+.pytest_cache/
+htmlcov/
+
+# Misc
+.env.example
+setup.sh
+setup.bat
+*.sql
+models.sql
+LICENSE
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+CITATION.cff
+SECURITY.md
+SECURITY_AUDIT_REPORT.md
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+.cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Database backups
+*.sql
+backups/

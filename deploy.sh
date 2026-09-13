@@ -9,7 +9,7 @@ echo "🚀 Starting WiFi Billing System Production Deployment"
 
 # Check if .env file exists
 if [ ! -f .env ]; then
-    echo "❌ Error: .env file not found. Please create one with production values."
+    echo " Error: .env file not found. Please create one with production values."
     exit 1
 fi
 

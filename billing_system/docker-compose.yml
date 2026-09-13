@@ -1,0 +1,83 @@
+
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wifi-billing-backend
+    restart: always
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-production}
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5000
+      DB_HOST: db
+      DB_USER: ${DB_USER:-wifiadmin}
+      DB_PASSWORD: ${DB_PASSWORD:-wifi_password}
+      DB_NAME: ${DB_NAME:-wifi_billing}
+      DB_PORT: 3306
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production}
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wifi-billing-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: wifi-billing-dashboard
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-wifiadmin}
+      DB_PASSWORD: ${DB_PASSWORD:-wifi_password}
+      DB_NAME: ${DB_NAME:-wifi_billing}
+      DB_PORT: 3306
+    ports:
+      - "8501:8501"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wifi-billing-network
+
+  db:
+    image: mysql:8.0
+    container_name: wifi-billing-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-wifi_password}
+      MYSQL_DATABASE: ${DB_NAME:-wifi_billing}
+      MYSQL_USER: ${DB_USER:-wifiadmin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-wifi_password}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./models.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - wifi-billing-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-wifiadmin}", "-p${DB_PASSWORD:-wifi_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+networks:
+  wifi-billing-network:
+    driver: bridge
+
+volumes:
+  db_data:
