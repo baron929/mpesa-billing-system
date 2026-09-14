@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   app:
@@ -6,25 +5,25 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - NODE_ENV=production
-      - PORT=5000
-      - DATABASE_URL=postgresql://wifi_user:wifi_password@db:5432/wifi_billing
-      - JWT_SECRET=${JWT_SECRET}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - MPESA_ENABLED=true
-      - MPESA_CONSUMER_KEY=${MPESA_CONSUMER_KEY}
-      - MPESA_CONSUMER_SECRET=${MPESA_CONSUMER_SECRET}
-      - MPESA_SHORTCODE=${MPESA_SHORTCODE}
-      - MPESA_PASSKEY=${MPESA_PASSKEY}
-      - MPESA_CALLBACK_URL=${MPESA_CALLBACK_URL}
-      - MIKROTIK_ENABLED=${MIKROTIK_ENABLED}
-      - MIKROTIK_HOST=${MIKROTIK_HOST}
-      - MIKROTIK_USER=${MIKROTIK_USER}
-      - MIKROTIK_PASSWORD=${MIKROTIK_PASSWORD}
-      - MIKROTIK_PORT=${MIKROTIK_PORT}
-      - LOAN_WIFI_DURATION_HOURS=${LOAN_WIFI_DURATION_HOURS}
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: mysql://wifiadmin:${MYSQL_PASSWORD}@db:3306/wifi_billing
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      MPESA_ENABLED: true
+      MPESA_CONSUMER_KEY: ${MPESA_CONSUMER_KEY}
+      MPESA_CONSUMER_SECRET: ${MPESA_CONSUMER_SECRET}
+      MPESA_SHORTCODE: ${MPESA_SHORTCODE}
+      MPESA_PASSKEY: ${MPESA_PASSKEY}
+      MPESA_CALLBACK_URL: ${MPESA_CALLBACK_URL}
+      MIKROTIK_ENABLED: ${MIKROTIK_ENABLED}
+      MIKROTIK_HOST: ${MIKROTIK_HOST}
+      MIKROTIK_USER: ${MIKROTIK_USER}
+      MIKROTIK_PASSWORD: ${MIKROTIK_PASSWORD}
+      MIKROTIK_PORT: ${MIKROTIK_PORT}
+      LOAN_WIFI_DURATION_HOURS: ${LOAN_WIFI_DURATION_HOURS}
     depends_on:
       db:
         condition: service_healthy
@@ -33,42 +32,38 @@ services:
       - wifi-network
 
   db:
-    image: postgres:15-alpine
+    image: mysql:8.0
     environment:
-      - POSTGRES_DB=wifi_billing
-      - POSTGRES_USER=wifi_user
-      - POSTGRES_PASSWORD=wifi_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: wifi_billing
+      MYSQL_USER: wifiadmin
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backups:/backups
+      - mysql_data:/var/lib/mysql
     ports:
-      - "5432:5432"
+      - "3307:3306"   # host port changed to 3307 to avoid conflicts
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wifi_user -d wifi_billing"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     networks:
       - wifi-network
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@wifi.com
-      - PGADMIN_DEFAULT_PASSWORD=admin123
+  adminer:
+    image: adminer
+    restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8080:8080"
     depends_on:
       - db
-    restart: unless-stopped
     networks:
       - wifi-network
-    profiles:
-      - tools
 
 volumes:
-  postgres_data:
+  mysql_data:
 
 networks:
   wifi-network:
